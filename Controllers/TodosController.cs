@@ -92,6 +92,7 @@ namespace DotNetCoreSqlDb.Controllers
         {
             if (ModelState.IsValid)
             {
+                todo.CreatedDate = DateTime.SpecifyKind(todo.CreatedDate, DateTimeKind.Utc);
                 _context.Add(todo);
                 await _context.SaveChangesAsync();
 
@@ -217,7 +218,7 @@ namespace DotNetCoreSqlDb.Controllers
             {
                 _context.Todo.Remove(todo);
             }
-
+            
             await _context.SaveChangesAsync();
 
             // Clear the todo item and todos list from the cache
