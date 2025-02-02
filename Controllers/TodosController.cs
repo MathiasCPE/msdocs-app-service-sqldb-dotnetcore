@@ -92,14 +92,22 @@ namespace DotNetCoreSqlDb.Controllers
         {
             if (ModelState.IsValid)
             {
-                todo.CreatedDate = DateTime.SpecifyKind(todo.CreatedDate, DateTimeKind.Utc);
-                _context.Add(todo);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    todo.CreatedDate = DateTime.SpecifyKind(todo.CreatedDate, DateTimeKind.Utc);
 
-                // Clear the todo items cache
-                await _cache.RemoveAsync(_TodoItemsCacheKey);
+                    _context.Add(todo);
+                    await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
+                    await _cache.RemoveAsync(_TodoItemsCacheKey);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "An error occurred while creating the todo item.");
+                    throw;
+                }
             }
             return View(todo);
         }
